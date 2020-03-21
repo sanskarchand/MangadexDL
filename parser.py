@@ -18,8 +18,14 @@ class MangaParser:
     def parseTitlePage(self):
         
         chapter_divs = self.soup.select(".chapter-row")
-        print(chapter_divs)
-
+        
+        for div in chapter_divs:
+            if "data-title" not in div.attrs:
+                continue
+            
+            print("Vol {} Ch {} - {}".format(div["data-volume"], div["data-chapter"],div["data-title"]))
+        
+        '''
         return 
         for child in self.soup.find_all('div'):
             if 'class' in child.attrs:
@@ -27,3 +33,4 @@ class MangaParser:
             #if child.attrs.has_key('class'):
                 if "chapter-row" in child['class']:
                     print(child["data-title"])
+        '''

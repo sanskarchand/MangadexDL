@@ -48,7 +48,9 @@ class MyFrame(wx.Frame):
         self.net_handler.setUserCredentials(c.N_UNAME, c.N_PASSWD) 
         self.updateStatusText("Logging in as " + c.N_UNAME)
         self.net_handler.userLogin()
-        self.updateStatusText("Logged in as " + c.N_UNAME)
+        self.updateStatusText("Attempting to set modal" + c.N_UNAME)
+        self.net_handler.adjustModal()
+        self.updateStatusText("Updated Modal. Ready for download")
 
     def makeStatusBar(self):
         
@@ -114,6 +116,8 @@ class MyFrame(wx.Frame):
         self.updateStatusText("Parsing URL content")
 
         p.parse()
+
+        self.updateStatusText("Finished Parsing")
 
 
 

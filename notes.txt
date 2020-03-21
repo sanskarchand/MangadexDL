@@ -38,3 +38,15 @@ KATHMANDU, NEPAL
 Reopening issue 1. The "View All" settings are, contrary to mangadex's claims, browser-based, and not account-based.
 
 Guess I'll need to play around with that modal stuff after all.
+
+
+================
+Entry 4
+2020-03-21 C.E.
+20:08 GMT+0545
+KATHMANDU, NEPAL
+
+My attempts to change the setting end with a short message "Hacking attempt... go away".
+Need to circumvent this.
+I'm not cracking anything anyway.
+

@@ -24,6 +24,25 @@ class NetHandler:
         resp = self.login_session.post( c.N_LOGIN_URL, auth_dict )
         print("Login resp code: ", resp.status_code)
 
+    def adjustModal(self):
+        # do this after login
+        
+        # the corresponding js sends this as a formdata object
+        # (site uses ajax and jquery)
+        
+        header = {'x-requested-with': 'XMLHttpRequest'}
+
+        payload = { "theme_id": "1",
+                "default_lang_ids":"0",
+                "display_lang_id":"1",
+                "hentai_mode":"1"
+        }
+
+        resp = self.login_session.post( c.N_CHANGE_URL, headers=header, data=payload)
+        print("Modal response code:", resp.status_code)
+        
+        with open("modal_response", "w") as f:
+            f.write(resp.text)
 
     def getURLContent(self, url):
 
