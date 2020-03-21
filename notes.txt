@@ -1,0 +1,40 @@
+Entry 1
+2020-03-21 C.E.
+12:20 GMT+0545
+KATHMANDU, NEPAL
+
+Day 1 of CoVID-19-induced isolation.
+
+Current issues:
+    1)-> not able to login (using _requests_ lib)
+        link: https://mangadex.org/ajax/actions.ajax.php?function=login&nojs=1
+    
+    unable to get session
+
+
+The scraping is the easy part; this user-related shit is the hard part
+================
+
+Entry 2
+2020-03-21 C.E.
+14:15 GMT+0545
+KATHMANDU, NEPAL
+
+
+Issue 1 resolved. Login possible.
+Require user to enable "View All" in H-manga setting and save settings.
+Could also do through the modal, but too lazy to programmatically change those settings
+
+Issue 2) Parsing problems
+    Should be resolved fairly quickly
+
+================
+
+Entry 3
+2020-03-21 C.E.
+18:13 GMT+0545
+KATHMANDU, NEPAL
+
+Reopening issue 1. The "View All" settings are, contrary to mangadex's claims, browser-based, and not account-based.
+
+Guess I'll need to play around with that modal stuff after all.
