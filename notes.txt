@@ -50,3 +50,23 @@ My attempts to change the setting end with a short message "Hacking attempt... g
 Need to circumvent this.
 I'm not cracking anything anyway.
 
+================
+Entry 5
+2020-03-22 C.E.
+13:41 GMT+0545
+KATHMANDU, NEPAL
+
+Done: successful retrieval of chapters ( even for h-manga )
+    possible issue: can we get all chapters in one go? (mangadex uses page numbers)
+
+
+Chief issue: 
+    need to find the last page number, given a chapter
+
+for feature:
+    <download chapter>
+
+
+methods to circumvent:
+    1) look for indicators in html
+    2) request the underlying image URLs until a 404 is encountered

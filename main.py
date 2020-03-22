@@ -1,40 +1,92 @@
 #!/usr/bin/env python
+
 import wx
 import const as c
 import nethandler as nh
 import parser as par
+import util
 
 class MyFrame(wx.Frame):
     
     def __init__(self, *args, **kwargs):
 
         super(MyFrame, self).__init__(*args, **kwargs)
+
+        # basic config
+        self.lang = "1"     #  English
+        self.status_text = "Initializing"
         
         self.net_handler = nh.NetHandler()
-
-        self.panel  = wx.Panel(self)
-        self.status_text = "<Status:Okay>"
         
-        '''
-        self.st = wx.StaticText(self.panel, label="Hello wx")
-        font = self.st.GetFont()
-        font.PointSize += 10
-        self.st.SetFont(font.Bold())
-        '''
+        self.panel_main = wx.Panel(self)
+        self.panel_top = wx.Panel(self.panel_main)
+        self.panel_bottom  = wx.Panel(self.panel_main)
+
+        self.panel_top_left = wx.Panel(self.panel_top)
+        self.panel_top_right = wx.Panel(self.panel_top)
+        self.panel_bottom_left = wx.Panel(self.panel_bottom)
+        self.panel_bottom_right = wx.Panel(self.panel_bottom)
+
+        
         
         # sizer to manage child widgets' layout
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        #self.sizer.Add(self.st, wx.SizerFlags().Border(wx.TOP|wx.LEFT, 25))
-        self.panel.SetSizer(self.sizer)
+        self.sizer_main = wx.BoxSizer(wx.VERTICAL)
+        self.sizer_top = wx.BoxSizer(wx.HORIZONTAL) 
+        self.sizer_top_left = wx.BoxSizer(wx.VERTICAL)
+        self.sizer_top_right = wx.BoxSizer(wx.VERTICAL)
+        self.sizer_bottom = wx.BoxSizer(wx.HORIZONTAL)
+        self.sizer_bottom_left = wx.BoxSizer(wx.VERTICAL)
+        self.sizer_bottom_right = wx.BoxSizer(wx.VERTICAL)
 
-        # input field for manga link
-        self.manga_link_field = wx.TextCtrl(self.panel, style=wx.TE_PROCESS_ENTER, size=(c.FIELD_WIDTH, -1))
+        self.sizer_main.Add(self.panel_top)
+        self.sizer_main.Add(self.panel_bottom)
+        self.sizer_top.Add(self.panel_top_left, proportion=1, flag=wx.ALIGN_LEFT)
+        self.sizer_top.AddSpacer(12)
+        self.sizer_top.Add(self.panel_top_right, proportion=1, flag=wx.ALIGN_RIGHT)
+
+        self.sizer_bottom.Add(self.panel_bottom_left, proportion=1, flag=wx.ALIGN_LEFT)
+        self.sizer_top.AddSpacer(8)
+        self.sizer_bottom.Add(self.panel_bottom_right, proportion=1, flag=wx.ALIGN_RIGHT)
+
+
+        #self.panel_top.SetSizer(self.sizer_top)
+        #self.panel_bottom.SetSizer(self.sizer_bottom)
+
+
+        #--- MANGA LINK INPUT WIDGETS BEGIN---
+        self.manga_link_text = wx.StaticText(self.panel_top_left, label="Manga: ")
+
+        self.manga_link_field = wx.TextCtrl(self.panel_top_left, style=wx.TE_PROCESS_ENTER, size=(c.FIELD_WIDTH, -1))
         self.manga_link_field.SetFocus()
         self.manga_link_field.Bind(wx.EVT_TEXT_ENTER, self.onLinkEntered)
-        self.sizer.Add(self.manga_link_field, 0, wx.ALL, 24)
-        
-        #self.panel.SetSizer
 
+        self.manga_link_button = wx.Button(self.panel_top_left, label="Get Chapters")
+        self.manga_link_button.Bind(wx.EVT_BUTTON, self.onLinkEntered)
+
+    
+        self.sizer_top_left.Add(self.manga_link_text, wx.ALL, border=2)
+        self.sizer_top_left.Add(self.manga_link_field, wx.ALL, border=2)
+        self.sizer_top_left.Add(self.manga_link_button, wx.ALL, border=2)
+        #--- MANGA LINK INPUT WIDGETS END---
+
+        #--- LANGUAGE SELECT WIDGETS BEGIN---
+        self.lang_select_text  = wx.StaticText(self.panel_top_right, label="Lang: ")
+        
+        self.lang_select_field = wx.TextCtrl(self.panel_top_right, style=wx.TE_PROCESS_ENTER, size=(c.FIELD_WIDTH_2, -1))
+
+        self.lang_select_button = wx.Button(self.panel_top_right, label="Set Language")
+        self.lang_select_button.Bind(wx.EVT_BUTTON, self.onLangSet)
+        
+
+        self.sizer_top_right.Add(self.lang_select_text, wx.ALL)
+        self.sizer_top_right.Add(self.lang_select_field, wx.ALL)
+        self.sizer_top_right.Add(self.lang_select_button, wx.ALL)
+        #--- LANGUAGE SELECT WIDGETS END---
+
+        self.chapter_clist_box = wx.CheckListBox(self.panel_bottom_left)
+        self.sizer_bottom_left.Add(self.chapter_clist_box, wx.ALL|wx.EXPAND)   # window, proportion, flag, border
+
+        
 
         self.makeMenuBar()
         #self.makeStatusBar()
@@ -42,7 +94,21 @@ class MyFrame(wx.Frame):
         #self.SetStatusText(self.status_text)
         self.updateStatusText()
 
+        #self.handleLogin()
+        
+        self.panel_main.SetSizer(self.sizer_main)
+        self.panel_top_left.SetSizer(self.sizer_top_left)
+        self.panel_top_right.SetSizer(self.sizer_top_right)
+        self.panel_top.SetSizer(self.sizer_top)
+        self.panel_bottom_left.SetSizer(self.sizer_bottom_left)
+        self.panel_bottom_right.SetSizer(self.sizer_bottom_right)
+        self.panel_bottom.SetSizer(self.sizer_bottom)
+
+    
+
+    def prepareForLaunch(self):
         self.handleLogin()
+
 
     def handleLogin(self):
         self.net_handler.setUserCredentials(c.N_UNAME, c.N_PASSWD) 
@@ -101,8 +167,10 @@ class MyFrame(wx.Frame):
     
     def onLinkEntered(self, event):
         
-        # assume this is a link
         text = self.manga_link_field.GetValue()
+
+        if not text:
+            return
         
         self.updateStatusText("Downloading URL content")
 
@@ -114,16 +182,27 @@ class MyFrame(wx.Frame):
         p = par.MangaParser(c.P_TYPE_TITLE_PAGE, page_data)
     
         self.updateStatusText("Parsing URL content")
-
-        p.parse()
-
+        chapter_objects = p.parse()   # list of MDChapter objects
         self.updateStatusText("Finished Parsing")
+
+        
+        chapter_map = util.getMapFromMDChapterList(chapter_objects)
+        choice_strings = list(chapter_map.keys())[::-1]
+        self.chapter_clist_box.InsertItems(choice_strings, 0)
+
+    def onLangSet(self, event):
+        val = self.lang_select_field.GetValue()
+
+        if not val:
+            return
+        self.lang = val
 
 
 
 if __name__ == '__main__':
 
     app = wx.App()
-    frame = MyFrame(None, title="HW 2")
+    frame = MyFrame(None, title="Mangadex Downloader")
     frame.Show()
+    frame.prepareForLaunch()
     app.MainLoop()
