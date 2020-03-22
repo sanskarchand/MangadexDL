@@ -10,5 +10,5 @@ N_LOGIN_URL = "http://www.mangadex.org/ajax/actions.ajax.php?function=login&nojs
 N_MAIN_URL ="http://www.mangadex.org/"  # for editing the modal
 N_CHANGE_URL = "http://www.mangadex.org/ajax/actions.ajax.php?function=homepage_settings"
 
-N_UNAME = "eromaster"
-N_PASSWD = "namelmangadex"
+N_UNAME = "<redacted>"
+N_PASSWD = "<redacted>"
