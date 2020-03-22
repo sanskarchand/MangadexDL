@@ -6,7 +6,7 @@ Downloads manga from mangadex.org
 
 # Pre-requisites
 Currently requires that you have a mangadex.org account, as I did not plan to use the API initially.
-This requirement can be removed with a little tweaking ( use the API completely )
+This requirement can be removed with a little tweaking ( exclusively use the API).
 
 # Dependencies
 
