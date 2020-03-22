@@ -1,8 +1,8 @@
-#MangaDex Downloader
+# MangaDex Downloader
 
 Downloads manga from mangadex.org
 
-[screenshot here]
+![](https://github.com/sanskarchand/MangadexDL/blob/master/screenshots/Screenshot_2020-03-22_13-49-20.png)
 
 # Pre-requisites
 
