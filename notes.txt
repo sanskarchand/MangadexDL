@@ -70,3 +70,40 @@ for feature:
 methods to circumvent:
     1) look for indicators in html
     2) request the underlying image URLs until a 404 is encountered
+
+================
+Entry 6
+2020-03-22 C.E.
+17:46 GMT+0545
+KATHMANDU, NEPAL
+
+Issue: getting the image sources.
+Can't find where the code requests the images.
+Did find a header-header convo
+
+Will just use the official API
+
+================
+Entry 7
+2020-03-22 C.E.
+18:21 GMT+0545
+KATHMANDU, NEPAL
+
+I am a humongous dunderhead.
+All of that homepage_setting AJAX stuff could've been avoided if I'd used the
+API from the start.
+To be fair, I didn't really put much stock into the mangadex API ( since they themselves said it was
+under development ). However, since I ended up having to rely on it in the end, all of my previous work is
+now worthless.
+
+To-do: 
+    1) revamp code, make full use of API and remove useless code
+    2) improve GUI
+    3) add CLI option
+
+
+Honestly, I'm too busy/lazy to do anything about this right now.
+It ain't broke, so I ain't fixin' it.
+Perhaps in a couple of weeks.
+
+================

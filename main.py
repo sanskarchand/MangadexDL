@@ -4,6 +4,9 @@ import wx
 import const as c
 import nethandler as nh
 import parser as par
+import abstracts as ab  # not abs
+
+import os
 import util
 
 class MyFrame(wx.Frame):
@@ -15,9 +18,15 @@ class MyFrame(wx.Frame):
         # basic config
         self.lang = "1"     #  English
         self.status_text = "Initializing"
-        
+        self.check_all = False
+        self.chapter_map = dict()
+        self.task_map = dict()
+        self.task_list = []
+        self.manga_name = "TEMP"
         self.net_handler = nh.NetHandler()
         
+        
+        # GUI stuff starts
         self.panel_main = wx.Panel(self)
         self.panel_top = wx.Panel(self.panel_main)
         self.panel_bottom  = wx.Panel(self.panel_main)
@@ -38,14 +47,15 @@ class MyFrame(wx.Frame):
         self.sizer_bottom_left = wx.BoxSizer(wx.VERTICAL)
         self.sizer_bottom_right = wx.BoxSizer(wx.VERTICAL)
 
-        self.sizer_main.Add(self.panel_top)
-        self.sizer_main.Add(self.panel_bottom)
+        self.sizer_main.Add(self.panel_top, flag=wx.EXPAND)
+        self.sizer_main.AddSpacer(24)
+        self.sizer_main.Add(self.panel_bottom, flag=wx.EXPAND)
         self.sizer_top.Add(self.panel_top_left, proportion=1, flag=wx.ALIGN_LEFT)
         self.sizer_top.AddSpacer(12)
         self.sizer_top.Add(self.panel_top_right, proportion=1, flag=wx.ALIGN_RIGHT)
 
         self.sizer_bottom.Add(self.panel_bottom_left, proportion=1, flag=wx.ALIGN_LEFT)
-        self.sizer_top.AddSpacer(8)
+        self.sizer_top.AddSpacer(12)
         self.sizer_bottom.Add(self.panel_bottom_right, proportion=1, flag=wx.ALIGN_RIGHT)
 
 
@@ -53,7 +63,7 @@ class MyFrame(wx.Frame):
         #self.panel_bottom.SetSizer(self.sizer_bottom)
 
 
-        #--- MANGA LINK INPUT WIDGETS BEGIN---
+        #--- MANGA LINK INPUT WIDGETS BEGIN ---
         self.manga_link_text = wx.StaticText(self.panel_top_left, label="Manga: ")
 
         self.manga_link_field = wx.TextCtrl(self.panel_top_left, style=wx.TE_PROCESS_ENTER, size=(c.FIELD_WIDTH, -1))
@@ -67,9 +77,9 @@ class MyFrame(wx.Frame):
         self.sizer_top_left.Add(self.manga_link_text, wx.ALL, border=2)
         self.sizer_top_left.Add(self.manga_link_field, wx.ALL, border=2)
         self.sizer_top_left.Add(self.manga_link_button, wx.ALL, border=2)
-        #--- MANGA LINK INPUT WIDGETS END---
+        #--- MANGA LINK INPUT WIDGETS END ---
 
-        #--- LANGUAGE SELECT WIDGETS BEGIN---
+        #--- LANGUAGE SELECT WIDGETS BEGIN ---
         self.lang_select_text  = wx.StaticText(self.panel_top_right, label="Lang: ")
         
         self.lang_select_field = wx.TextCtrl(self.panel_top_right, style=wx.TE_PROCESS_ENTER, size=(c.FIELD_WIDTH_2, -1))
@@ -81,12 +91,39 @@ class MyFrame(wx.Frame):
         self.sizer_top_right.Add(self.lang_select_text, wx.ALL)
         self.sizer_top_right.Add(self.lang_select_field, wx.ALL)
         self.sizer_top_right.Add(self.lang_select_button, wx.ALL)
-        #--- LANGUAGE SELECT WIDGETS END---
-
-        self.chapter_clist_box = wx.CheckListBox(self.panel_bottom_left)
-        self.sizer_bottom_left.Add(self.chapter_clist_box, wx.ALL|wx.EXPAND)   # window, proportion, flag, border
-
+        #--- LANGUAGE SELECT WIDGETS END ---
         
+        # separator 
+        #self.hor_sep = wx.StaticLine(self.panel_top)
+        #self.sizer_top.Add(self.hor_sep, wx.ALL)
+
+
+
+        #--- CHAPER LIST WIDGETS BEGIN ---
+        self.chapter_clist_box = wx.CheckListBox(self.panel_bottom_left, size=(c.LIST_WIDTH, c.LIST_HEIGHT))
+
+        self.check_toggle_but = wx.Button(self.panel_bottom_left, label="Un-/Check All")
+        self.check_toggle_but.Bind(wx.EVT_BUTTON, self.onCheckToggle)
+        self.down_chap_but = wx.Button(self.panel_bottom_left, label="DL selected")
+        self.down_chap_but.Bind(wx.EVT_BUTTON, self.onDownChap)
+        
+        self.sizer_bottom_left.Add(self.check_toggle_but, wx.ALL)
+        self.sizer_bottom_left.Add(self.down_chap_but, wx.ALL)
+        self.sizer_bottom_left.Add(self.chapter_clist_box, wx.ALL|wx.EXPAND)   # window, proportion, flag, border
+        #self.sizer_bottom_left.Add(self.down_chap_but, wx.ALL)
+        #--- CHAPER LIST WIDGETS END ---
+
+        #--- TASK LIST WIDGETS BEGIN---
+        self.task_clist_box = wx.CheckListBox(self.panel_bottom_right, size=(c.LIST_WIDTH_2, c.LIST_HEIGHT))
+
+        self.task_download_but = wx.Button(self.panel_bottom_right, label="Execute Tasks")
+        self.task_download_but.Bind(wx.EVT_BUTTON, self.onDownTasks)
+        
+        self.sizer_bottom_right.Add(self.task_download_but, wx.ALL)
+        self.sizer_bottom_right.Add(self.task_clist_box, wx.ALL|wx.EXPAND)
+        #--- TASK LIST WIDGETS END---
+
+
 
         self.makeMenuBar()
         #self.makeStatusBar()
@@ -152,9 +189,18 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onAbout, item_about)
     
     def updateStatusText(self, text=None):
+        
         if text is not None:
             self.status_text = text
+
         self.SetStatusText(self.status_text)
+
+    def updateTaskList(self):
+        self.task_clist_box.Clear()
+
+        x = [ task.name for task in self.task_list ]
+        self.task_clist_box.InsertItems(x, 0)
+
 
     def onExit(self, event):
         self.Close(True)
@@ -168,10 +214,19 @@ class MyFrame(wx.Frame):
     def onLinkEntered(self, event):
         
         text = self.manga_link_field.GetValue()
-
+        
         if not text:
             return
         
+        if text[-1] == "/":
+            text = text[:-1]
+
+       
+        self.chapter_map = dict() # reset the chapter map
+        self.manga_name = util.getTitleFromURL(text) # reset manga name
+        self.chapter_clist_box.Clear()  # clear the left box
+
+
         self.updateStatusText("Downloading URL content")
 
         page_data = self.net_handler.getURLContent(text)
@@ -182,12 +237,27 @@ class MyFrame(wx.Frame):
         p = par.MangaParser(c.P_TYPE_TITLE_PAGE, page_data)
     
         self.updateStatusText("Parsing URL content")
-        chapter_objects = p.parse()   # list of MDChapter objects
-        self.updateStatusText("Finished Parsing")
-
+        num_nav_pages = p.parse()
         
-        chapter_map = util.getMapFromMDChapterList(chapter_objects)
-        choice_strings = list(chapter_map.keys())[::-1]
+        #print("NUM PAGES = ", num_nav_pages)
+        
+        chapter_objects = []
+        
+        for i in range(1, num_nav_pages+1):
+            
+            nav_link = text + "/chapters/" + str(i)
+
+            nav_page_data = self.net_handler.getURLContent(nav_link)
+            new_p = par.MangaParser(c.P_TYPE_NAV_PAGE, nav_page_data)
+
+            chapter_objects.extend(new_p.parse())
+
+        # list of MDChapter objects
+        self.updateStatusText("Finished Parsing")
+        
+        chapter_objects = util.filterChaptersByLand(chapter_objects, self.lang)
+        self.chapter_map = util.getMapFromMDChapterList(chapter_objects)
+        choice_strings = list(self.chapter_map.keys())[::-1]
         self.chapter_clist_box.InsertItems(choice_strings, 0)
 
     def onLangSet(self, event):
@@ -196,6 +266,69 @@ class MyFrame(wx.Frame):
         if not val:
             return
         self.lang = val
+
+    def onCheckToggle(self, event):
+        self.check_all = not self.check_all
+        
+        c = self.chapter_clist_box.GetCount()
+        
+        if self.check_all:
+            indices = list(range(c))
+            self.chapter_clist_box.SetCheckedItems(indices)
+        else:
+            for ind in range(c):
+                self.chapter_clist_box.Check(ind, False)
+    
+    def onDownChap(self, event):
+
+        li = []
+        checked_strings = self.chapter_clist_box.GetCheckedStrings()
+        for cs in checked_strings:
+            li.append(self.chapter_map[cs])
+
+        
+        t_name = "Task no. " + str(len(self.task_list)+1)
+        m_name = self.manga_name
+
+        new_task = ab.DownloadTask(t_name, m_name, li)
+        
+        self.task_list.append(new_task)
+        self.task_map[t_name] = new_task
+
+        self.updateTaskList()
+
+   
+    def onDownTasks(self, event):
+        
+        # get selected tasks
+        li = []
+        checked_strings = self.task_clist_box.GetCheckedStrings()
+        checked_items = self.task_clist_box.GetCheckedItems()
+
+        for idx, cs in enumerate(checked_strings):
+            task = self.task_map[cs]
+            self.updateStatusText("Executing " + cs)
+            self.executeTask(task)
+
+            corr_idx = checked_items[idx]
+            self.task_clist_box.Delete(corr_idx) # CheckListBox -> ListBox -> ItemContainer
+            
+            self.task_list.remove(task)
+        
+        self.updateStatusText("Finished all tasks")
+
+    
+    def executeTask(self, task):
+
+        md_chap_list = task.getChapters()
+        manga_name = task.getMangaName()
+
+        for md_chap in md_chap_list:
+        
+            path =  os.path.join(manga_name, md_chap.getChapterFolderName())
+
+            self.net_handler.downloadChapter(path, md_chap.getChapterLink(), md_chap.id)
+            
 
 
 

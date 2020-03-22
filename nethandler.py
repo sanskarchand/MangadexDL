@@ -2,6 +2,9 @@
 
 import requests
 import const as c
+import os
+import time
+import json  # should be in parser.py
 
 class NetHandler:
     
@@ -48,3 +51,39 @@ class NetHandler:
 
         response = self.login_session.get(url)
         return response.text
+
+    def downloadChapter(self, path, link, chap_id):
+        
+        # link -> link to whole chapter
+        
+        cur_path = os.getcwd()
+
+        if not os.path.exists(path):
+            #os.mkdir(path)
+            os.makedirs(path, exist_ok=True)
+
+        os.chdir(path)
+    
+        dat = self.login_session.get(c.N_API_CHAPTER +  chap_id)
+        json_dict = json.loads(dat.content)
+
+        
+        serv_ = json_dict["server"]
+        hash_ = json_dict["hash"]
+        page_arr_ = json_dict["page_array"]
+
+        for img_name in page_arr_:
+            url = serv_ + hash_ + "/" + img_name
+            #print("URL: ", url)
+            resp = self.login_session.get(url)
+
+            with open(img_name, "wb") as f:
+                f.write(resp.content)
+
+            time.sleep(c.N_WAIT_TIME)
+
+
+        # reset path at the end
+        os.chdir(cur_path)
+
+
