@@ -2,7 +2,7 @@
 
 Downloads manga from mangadex.org
 
-![](https://github.com/sanskarchand/MangadexDL/blob/master/screenshots/Screenshot_2020-03-22_18-32-44.png)
+![](https://github.com/sanskarchand/MangadexDL/blob/master/screenshots/Screenshot_2020-03-22_18-48-09.png)
 
 # Pre-requisites
 Currently requires that you have a mangadex.org account, as I did not plan to use the API initially.
