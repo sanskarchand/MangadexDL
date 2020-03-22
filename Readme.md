@@ -12,7 +12,8 @@ This requirement can be removed with a little tweaking ( exclusively use the API
 
 Uses Python 3.
 External libraries:
-    *wxPython
+    
+    * wxPython
 
 # Usage
 1) Run main.py
