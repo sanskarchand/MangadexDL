@@ -12,11 +12,11 @@ This requirement can be removed with a little tweaking ( exclusively use the API
 
 Uses Python 3.
 External libraries:
-    * wxPython
+    *wxPython
 
 # Usage
 1) Run main.py
-2) Enter a title link "like https://mangadex.org/title/31477/solo-leveling" in the 'Manga' field.
+2) Enter a title link like "https://mangadex.org/title/31477/solo-leveling" in the 'Manga' field.
 3) click on 'Get Chapters'
 4) Select the chapters you want and press 'DL selected'
 5) A task is formed. Check that task and press 'Execute Tasks'
