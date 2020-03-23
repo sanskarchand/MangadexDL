@@ -13,7 +13,7 @@ Current issues:
 
 
 The scraping is the easy part; this user-related shit is the hard part
-================
+================================
 
 Entry 2
 2020-03-21 C.E.
@@ -28,7 +28,7 @@ Could also do through the modal, but too lazy to programmatically change those s
 Issue 2) Parsing problems
     Should be resolved fairly quickly
 
-================
+================================
 
 Entry 3
 2020-03-21 C.E.
@@ -40,7 +40,7 @@ Reopening issue 1. The "View All" settings are, contrary to mangadex's claims, b
 Guess I'll need to play around with that modal stuff after all.
 
 
-================
+================================
 Entry 4
 2020-03-21 C.E.
 20:08 GMT+0545
@@ -50,7 +50,7 @@ My attempts to change the setting end with a short message "Hacking attempt... g
 Need to circumvent this.
 I'm not cracking anything anyway.
 
-================
+================================
 Entry 5
 2020-03-22 C.E.
 13:41 GMT+0545
@@ -71,7 +71,7 @@ methods to circumvent:
     1) look for indicators in html
     2) request the underlying image URLs until a 404 is encountered
 
-================
+================================
 Entry 6
 2020-03-22 C.E.
 17:46 GMT+0545
@@ -83,7 +83,7 @@ Did find a header-header convo
 
 Will just use the official API
 
-================
+================================
 Entry 7
 2020-03-22 C.E.
 18:21 GMT+0545
@@ -106,4 +106,22 @@ Honestly, I'm too busy/lazy to do anything about this right now.
 It ain't broke, so I ain't fixin' it.
 Perhaps in a couple of weeks.
 
-================
+================================
+Entry 8 
+2020-03-23 C.E.
+13:11 GMT+0545
+KATHMANDU, NEPAL
+
+I need to fix this mess.
+
+-> ADD testing and measurement (radon, perhaps)
+-> clean up the code ( exclusively use the API )
+-> make the GUI prettier
+-> add some kind of persistence
+
+================================
+
+
+
+
+
